@@ -32,8 +32,16 @@ def get_stations(query: str) -> str:
 
     return xmltodict.parse(data.decode("utf-8"))
 
+def insert_stations_to_db() -> None:
+    stations = get_stations("*")["stations"]["station"]
+
+    for station in stations:
+        # print(s)
+        model.Station.replace(name=station["@name"], number=station["@eva"], ds100=station["@ds100"]).execute()
+
 def main():
     model.connect()
+    insert_stations_to_db()
 
 if __name__ == "__main__":
     main()
