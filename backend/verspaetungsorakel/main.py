@@ -40,6 +40,11 @@ def list_stations():
     for station in model.Station.select().where(model.Station.name.startswith(name)):
         stations.append(model_to_dict(station))
 
+    # search with ds100 when no station was found
+    if len(stations) == 0:
+        for station in model.Station.select().where(model.Station.ds100.startswith(name)):
+            stations.append(model_to_dict(station))
+
     return jsonify(stations), 200
 
 
