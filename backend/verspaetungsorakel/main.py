@@ -41,7 +41,7 @@ def list_stations():
     name = request.args.get("name", "")
 
     stations = []
-    for station in model.Station.select().where(model.Station.name.contains(name)):
+    for station in model.Station.select().where(model.Station.name.startswith(name)):
         stations.append(model_to_dict(station))
 
     return jsonify(stations), 200
