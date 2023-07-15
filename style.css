@@ -58,8 +58,8 @@ li {
     }
 }
 
-.search-bar {
-    width: 500px;
+.search-bar-stop {
+    width: 400px;
     height: 60px;
     background-color: var(--white);
     border-radius: 5px;
@@ -68,6 +68,12 @@ li {
     
 }
 
-.table {
+.search-bar-train {
+    width: 200px;
+    height: 60px;
+    background-color: var(--white);
+    border-radius: 5px;
+    font-size: 20px;
+    padding-left: 20px;
     
 }
