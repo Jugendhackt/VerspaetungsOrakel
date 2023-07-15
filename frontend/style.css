@@ -44,18 +44,19 @@ li {
 }
 
 .search-bar-stop {
+    border: 1px solid transparent;
     width: 200px;
-    height: 60px;
+    height: 9vh;
     background-color: var(--white);
     border-radius: 5px;
     font-size: 20px;
-    padding-left: 20px;
+    padding: 10px;
     
 }
 
 .submit {
-    height: 60px;
-    width: 100px;
+    height: 9vh;
+    width: 5vw;
     background-color: var(--white);
     border-radius: 5px;
     font-size: 20px;
@@ -90,7 +91,7 @@ input {
   padding: 10px;
   font-size: 16px;
   width: 200px;
-  height: 60px;
+  height: 9vh;
   background-color: var(--white);
   border-radius: 5px;
   font-size: 20px;
