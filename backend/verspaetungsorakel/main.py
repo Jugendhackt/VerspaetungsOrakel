@@ -18,18 +18,28 @@ def submit():
     train = request.args.get("train")
     station = request.args.get("station")
 
-    stops = model.Stop.select().where(
-        model.Stop.station.number == station,
-        model.Stop.trip.train.number == train
-    )
-
-    total_delay = 0
-    for stop in stops:
-        total_delay += stop.arrival_delay
-
-    average_delay = total_delay / len(stops)
+    average_delay = get_delay(station, train)
 
     return jsonify({"average_delay": average_delay}), 200
+
+
+def get_delay(station_number: str, train_number: str) -> float:
+    # TODO: Limit to last x days
+    stops = model.Stop.select().join(
+        model.Trip,
+        on=(model.Stop.trip == model.Trip.id)
+    ).join(
+        model.Train,
+        on=(model.Trip.train == model.Train.id)
+    ).join(
+        model.Station,
+        on=(model.Stop.station == model.Station.id)
+    ).where(
+        (model.Station.number == station_number) & (model.Train.number == train_number)
+    )
+
+    delays = [stop.arrival_delay for stop in stops]
+    return sum(delays) / len(delays)
 
 
 @app.route("/api/stations")
