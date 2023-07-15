@@ -19,7 +19,10 @@ class BaseModel(Model):
 class Train(BaseModel):
     id = AutoField()
     number = IntegerField()
-    type = TextField()
+    type = CharField(max_length=20)
+
+    class Meta:
+        indexes = ((("number", "type"), True),)
 
 
 class Trip(BaseModel):
@@ -44,8 +47,8 @@ class Stop(BaseModel):
     trip = ForeignKeyField(Trip)
     arrival = DateTimeField()
     departure = DateTimeField()
-    arrival_delay = IntegerField()
-    departure_delay = IntegerField()
+    arrival_delay = IntegerField(null=True)
+    departure_delay = IntegerField(null=True)
 
     class Meta:
         indexes = ((("station", "arrival", "departure", "trip"), True),)

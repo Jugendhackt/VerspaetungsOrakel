@@ -1,3 +1,3 @@
-Pünktlichkeitsorakel
+# Pünktlichkeitsorakel
 
-Ein Projekt das Zugverspätungen übersichtlich anzeigt.
+Ein Projekt zur übersichtlichen Anzeige von Zugverspätungen.
