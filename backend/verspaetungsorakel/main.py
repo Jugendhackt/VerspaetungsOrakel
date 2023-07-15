@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import datetime
 from playhouse.shortcuts import model_to_dict
 
 import verspaetungsorakel.model as model
@@ -18,13 +19,12 @@ def submit():
     train = request.args.get("train")
     station = request.args.get("station")
 
-    average_delay = get_delay(station, train)
+    average_delay = get_delay(int(station), int(train))
 
     return jsonify({"average_delay": average_delay}), 200
 
 
-def get_delay(station_number: str, train_number: str) -> float:
-    # TODO: Limit to last x days
+def get_delay(station_number: int, train_number: int) -> float:
     stops = model.Stop.select().join(
         model.Trip,
         on=(model.Stop.trip == model.Trip.id)
@@ -35,11 +35,18 @@ def get_delay(station_number: str, train_number: str) -> float:
         model.Station,
         on=(model.Stop.station == model.Station.id)
     ).where(
-        (model.Station.number == station_number) & (model.Train.number == train_number)
+        (model.Station.number == station_number) &
+        (model.Train.number == train_number) &
+        # limits average to the last 30 days
+        (model.Stop.arrival >= datetime.datetime.now() - datetime.timedelta(days=30))
     )
 
     delays = [stop.arrival_delay for stop in stops]
-    return sum(delays) / len(delays)
+    try:
+        average_delay = round(sum(delays) / len(delays), 2)
+    except ZeroDivisionError:
+        average_delay = 0
+    return average_delay
 
 
 @app.route("/api/stations")
