@@ -93,4 +93,6 @@ li {
 
 html {
     background-image: url("backgroundimage.png");
+    background-repeat: no-repeat;
+    background-size: auto;
 }
