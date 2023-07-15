@@ -6,8 +6,7 @@ function postRequest() {
     method: "GET",
     
     headers: {
-        "Content-type": "text",
-        'Access-Control-Allow-Origin':'*'
+        "Content-type": "text"
  
     }
     })
