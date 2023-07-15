@@ -1,6 +1,8 @@
+from dotenv import load_dotenv
 from peewee import *
 import os
 
+load_dotenv()
 
 db_name = os.getenv("DB_NAME")
 db_user = os.getenv("DB_USER")
@@ -26,9 +28,7 @@ class Trip(BaseModel):
     date = DateField()
 
     class Meta:
-        indexes = (
-            (("train", "date"), True),
-        )
+        indexes = ((("train", "date"), True),)
 
 
 class Station(BaseModel):
@@ -48,9 +48,7 @@ class Stop(BaseModel):
     departure_delay = IntegerField()
 
     class Meta:
-        indexes = (
-            (("station", "arrival", "departure", "trip"), True),
-        )
+        indexes = ((("station", "arrival", "departure", "trip"), True),)
 
 
 def connect():
