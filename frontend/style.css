@@ -35,23 +35,7 @@ li {
     font-weight: bold;
 }
 
-.menu {
-    display: flex;
-    gap: 5em;
-    font-size: 18px;
-    margin-right: 100px;
-}
-.link > a {
-    color: var(--white);
-    font-size: 20px;
-    font-weight: bold;
-}
 
-.menu li:hover {
-    background-color: #4c9e9e;
-    border-radius: 5px;
-    transition: 0.3s ease;
-}
 
 @media (max-width: 900px) {
     .menu {
@@ -60,28 +44,19 @@ li {
 }
 
 .search-bar-stop {
-    width: 400px;
-    height: 60px;
-    background-color: var(--white);
-    border-radius: 5px;
-    font-size: 20px;
-    padding-left: 20px;
-    
-}
-
-.search-bar-train {
+    border: 1px solid transparent;
     width: 200px;
-    height: 60px;
+    height: 9vh;
     background-color: var(--white);
     border-radius: 5px;
     font-size: 20px;
-    padding-left: 20px;
+    padding: 10px;
     
 }
 
 .submit {
-    height: 60px;
-    width: 100px;
+    height: 9vh;
+    width: 5vw;
     background-color: var(--white);
     border-radius: 5px;
     font-size: 20px;
@@ -115,6 +90,11 @@ input {
   background-color: #f1f1f1;
   padding: 10px;
   font-size: 16px;
+  width: 200px;
+  height: 9vh;
+  background-color: var(--white);
+  border-radius: 5px;
+  font-size: 20px;
 }
 input[type=text] {
   background-color: #f1f1f1;
