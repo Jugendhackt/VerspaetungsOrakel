@@ -77,3 +77,11 @@ li {
     padding-left: 20px;
     
 }
+
+.submit {
+    height: 60px;
+    width: 100px;
+    background-color: var(--white);
+    border-radius: 5px;
+    font-size: 20px;
+}
