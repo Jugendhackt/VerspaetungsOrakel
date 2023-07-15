@@ -11,10 +11,16 @@ def submit():
     train = request.args.get("train")
     station = request.args.get("station")
 
-    average_delay = model.Stop.select(fn.AVG(model.Stop.departure_delay)).where(
-        model.Stop.station.name == station,
+    stops = model.Stop.select().where(
+        model.Stop.station.number == station,
         model.Stop.trip.train.number == train
-    ).first()
+    )
+
+    total_delay = 0
+    for stop in stops:
+        total_delay += stop.arrival_delay
+
+    average_delay = total_delay / len(stops)
 
     return jsonify({"average_delay": average_delay}), 200
 

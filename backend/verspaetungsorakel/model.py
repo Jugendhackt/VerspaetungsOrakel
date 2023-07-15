@@ -34,6 +34,7 @@ class Trip(BaseModel):
 class Station(BaseModel):
     id = AutoField()
     name = TextField()
+    number = IntegerField()
     ds100 = TextField()
 
 
