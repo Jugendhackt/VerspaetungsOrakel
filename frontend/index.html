@@ -9,7 +9,7 @@
             rel="stylesheet"
         />
         <title>PünktlichkeitsOrakel</title>
-        <script src="./index.js"></script>
+        <script src="./index.js"></script> 
     </head>
     <body>
         <nav class="navbar">
@@ -19,11 +19,13 @@
                 </a>
             </div>
             <div class="links">
-                
+                <form autocomplete="off">
                     <input type="text" placeholder="Dein Zug..." class="search-bar-train" id="train-id">
-                    <input type="text" placeholder="Deine Haltestelle..." class="search-bar-stop" id="station-id">
+                    <div class="autocomplete" style="width:300px;">
+                        <input id="myInput" type="text" name="myCountry" placeholder="Deine Haltestelle...">
+                    </div>
                     <input type="submit" value="Send" class="submit" onclick="postRequest()"/>
-                
+                </form>
             </div>
         </nav>
         <main class="main">
@@ -32,4 +34,7 @@
             </div>
         </main>
     </body>
+    <script>
+        autocomplete(document.getElementById("myInput"));
+    </script>
 </html>
