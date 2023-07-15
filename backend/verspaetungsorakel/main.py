@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from peewee import fn
 from playhouse.shortcuts import model_to_dict
 
 import verspaetungsorakel.model as model
