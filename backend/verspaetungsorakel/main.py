@@ -7,6 +7,11 @@ import verspaetungsorakel.model as model
 app = Flask(__name__)
 
 
+@app.route("/ping")
+def ping():
+    return "pong", 200
+
+
 @app.route("/api/submit")
 def submit():
     train = request.args.get("train")
