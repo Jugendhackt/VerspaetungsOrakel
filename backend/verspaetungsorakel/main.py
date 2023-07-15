@@ -1,10 +1,14 @@
 from flask import Flask, request, jsonify
-from peewee import fn
 from playhouse.shortcuts import model_to_dict
 
 import verspaetungsorakel.model as model
 
 app = Flask(__name__)
+
+
+@app.route("/ping")
+def ping():
+    return "pong", 200
 
 
 @app.route("/api/submit")
