@@ -1,5 +1,5 @@
-let train = document.getElementById("name").value;
-let station = document.getElementById("name").value;
+let train = document.getElementById("train-id").value;
+let station = document.getElementById("station-id").value;
 fetch("/api/submit", {
   method: "POST",
   body: JSON.stringify({
