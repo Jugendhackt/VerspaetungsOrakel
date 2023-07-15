@@ -4,6 +4,12 @@ from playhouse.shortcuts import model_to_dict
 import verspaetungsorakel.model as model
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
+
+
+@app.route("/ping")
+def ping():
+    return "pong", 200
 
 
 @app.route("/ping")
