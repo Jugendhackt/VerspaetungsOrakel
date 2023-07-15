@@ -28,9 +28,9 @@
                 </a>
             </div>
             <div class="links">
-                <form action="">
-                    <input type="text" placeholder="Dein Zug..." class="search-bar-train">
-                    <input type="text" placeholder="Deine Haltestelle..." class="search-bar-stop">
+                <form id="train-info" action="/submit" method="POST">
+                    <input type="text" name="train" placeholder="Dein Zug..." class="search-bar-train">
+                    <input type="text" name="stop" placeholder="Deine Haltestelle..." class="search-bar-stop">
                     <input type="submit" value="Send" class="submit"/>
                 </form>
             </div>
