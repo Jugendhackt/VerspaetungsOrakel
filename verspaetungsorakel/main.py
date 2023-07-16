@@ -113,10 +113,10 @@ def get_delay(station_name: str, train_number: int) -> float:
 
 @app.route("/api/trains")
 def list_trains():
-    number: int = request.args.get("number", 0)
+    number: str = request.args.get("number", "")
 
     trains = []
-    for train in model.Train.select().where(Value(model.Train.number.startswith(number), lambda x: str(x))):
+    for train in model.Train.select().where(model.Train.number.like(f"{number}%")):
         trains.append(model_to_dict(train))
 
     return jsonify(trains), 200
