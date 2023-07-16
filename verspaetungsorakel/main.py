@@ -78,13 +78,13 @@ def get_delay(station_number: int, train_number: int) -> float:
 @app.route("/api/stations")
 def list_stations():
     name = request.args.get("name", "")
+    ds100 = request.args.get("ds100", "")
 
     stations = []
-    for station in model.Station.select().where(model.Station.name.startswith(name)):
-        stations.append(model_to_dict(station))
-
-    # search with ds100 when no station was found
-    if len(stations) == 0:
+    if name != "":
+        for station in model.Station.select().where(model.Station.name.startswith(name)):
+            stations.append(model_to_dict(station))
+    elif ds100 != "":
         for station in model.Station.select().where(model.Station.ds100.startswith(name)):
             stations.append(model_to_dict(station))
 
