@@ -32,7 +32,7 @@ def submit():
     return jsonify({
         "average_delay": average_delay,
         "arrival": arrival,
-        departure: departure,
+        "departure": departure,
         "last_delays": last_delays
     }), 200
 
