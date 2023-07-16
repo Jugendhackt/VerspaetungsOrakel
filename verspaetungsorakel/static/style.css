@@ -131,6 +131,7 @@ input[type=submit] {
   color: #ffffff;
 }
 
+
 .results {
   position: relative;
   justify-content: center;
@@ -138,6 +139,7 @@ input[type=submit] {
   height: 20vh;
   margin: auto;
 }
+
 .vsol{
   position: absolute;
   left: 0.5em;
