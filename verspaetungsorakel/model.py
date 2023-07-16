@@ -49,6 +49,7 @@ class Stop(BaseModel):
     departure = DateTimeField()
     arrival_delay = IntegerField(null=True)
     departure_delay = IntegerField(null=True)
+    db_id = CharField(unique=True)
 
     class Meta:
         indexes = ((("station", "arrival", "departure", "trip"), True),)

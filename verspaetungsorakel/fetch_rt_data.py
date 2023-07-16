@@ -11,7 +11,7 @@ DB_API_ID = os.getenv("DB_API_ID")
 DB_API_KEY = os.getenv("DB_API_KEY")
 last_request = datetime.now()
 
-def write_timetables_to_db(ds100: str, date: datetime) -> None:
+def write_timetables_to_db(ds100: str) -> None:
     for station in model.Station.select().where(model.Station.ds100 == ds100):
         global last_request
         while datetime.now() - last_request < timedelta(seconds=1):
@@ -30,7 +30,7 @@ def write_timetables_to_db(ds100: str, date: datetime) -> None:
 
         conn.request(
             "GET",
-            f"/db-api-marketplace/apis/timetables/v1/plan/{eva_no}/{date.strftime('%y%m%d')}/{date.strftime('%H')}",
+            f"/db-api-marketplace/apis/timetables/v1/fchg/{eva_no}",
             headers=headers
         )
 
@@ -44,25 +44,37 @@ def write_timetables_to_db(ds100: str, date: datetime) -> None:
             return
 
         result = xmltodict.parse(data.decode("utf-8"))
-        for train in result["timetable"]["s"]:
-            # print(train)
-            saved_train = model.Train.get_or_create(type=train["tl"]["@c"], number=train["tl"]["@n"])
-            saved_trip = model.Trip.get_or_create(train=saved_train[0], date=date)
-            model.Stop.get_or_create(station=station, trip=saved_trip[0], arrival=datetime.strptime(train["ar"]["@pt"], "%y%m%d%H%M"), departure=datetime.strptime(train["dp"]["@pt"], "%y%m%d%H%M"), db_id=train["@id"])
+        for s in result["timetable"]["s"]:
+            try:
+                stop = model.Stop.get(model.Stop.db_id == s["@id"])
+            except model.DoesNotExist:
+                # print("Unknown stop")
+                continue
+
+            try:
+                actual_arrival = datetime.strptime(s["ar"]["@ct"], "%y%m%d%H%M")
+                stop.arrival_delay = (actual_arrival - stop.arrival).total_seconds()
+            except KeyError:
+                # print("Unknown key lol")
+                pass
+
+            try:
+                actual_departure = datetime.strptime(s["dp"]["@ct"], "%y%m%d%H%M")
+                stop.departure_delay = (actual_departure - stop.departure).total_seconds()
+            except KeyError:
+                # print("Unknown key lol")
+                pass
+
+            stop.save()
 
 
 def main():
     model.connect()
 
     stations = ["FFLF", "MH", "KK", "RK", "TS", "AH", "BL", "BLT"]
-    start = datetime.now() - timedelta(hours=6)
-    end = datetime.now() + timedelta(days=1)
-    current = start
 
     for station in stations:
-        while current < end:
-            write_timetables_to_db(station, current)
-            current += timedelta(hours=1)
+        write_timetables_to_db(station)
 
 if __name__ == "__main__":
     main()
