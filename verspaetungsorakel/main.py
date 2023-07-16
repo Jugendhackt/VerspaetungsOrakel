@@ -45,19 +45,17 @@ def submit():
 
 
 def get_stop_time(station_name: str, train_number: int):
-    stop = model.Stop.select().join(
-        model.Trip,
-        on=(model.Stop.trip == model.Trip.id)
-    ).join(
-        model.Train,
-        on=(model.Trip.train == model.Train.id)
-    ).join(
-        model.Station,
-        on=(model.Stop.station == model.Station.id)
-    ).where(
-        (model.Stop.station.name == station_name) &
-        (model.Stop.trip.train.number == train_number)
-    ).order_by(model.Stop.arrival).first()
+    station_id = model.Station.select(model.Station.id).where(model.Station.name == station_name).first()
+    train_id = model.Train.select(model.Train.id).where(model.Train.number == train_number).first()
+    trip_id = model.Trip.select(model.Trip.id).where(
+        (model.Trip.train == train_id) &
+        (model.Trip.date == datetime.date.today())
+    ).first()
+
+    stop = model.Stop.select().where(
+        (model.Stop.station == station_id) &
+        (model.Stop.trip == trip_id)
+    ).first()
 
     if stop is None:
         return 0, 0
@@ -92,21 +90,18 @@ def get_last_delays(station_name: str, train_number: int) -> list[dict]:
 
 
 def get_delay(station_name: str, train_number: int) -> float:
-    stops = model.Stop.select().join(
-        model.Trip,
-        on=(model.Stop.trip == model.Trip.id)
-    ).join(
-        model.Train,
-        on=(model.Trip.train == model.Train.id)
-    ).join(
-        model.Station,
-        on=(model.Stop.station == model.Station.id)
-    ).where(
-        (model.Station.name == station_name) &
-        (model.Train.number == train_number) &
-        # limits average to the last 30 days
-        (model.Stop.arrival >= datetime.datetime.now() - datetime.timedelta(days=30))
-    )
+    station_id = model.Station.select(model.Station.id).where(model.Station.name == station_name).first()
+    train_id = model.Train.select(model.Train.id).where(model.Train.number == train_number).first()
+    trip_id = model.Trip.select(model.Trip.id).where(
+        (model.Trip.train == train_id) &
+        (model.Trip.date == datetime.date.today())
+    ).first()
+
+    stops = model.Stop.select().where(
+        (model.Stop.station == station_id) &
+        (model.Stop.trip == trip_id) &
+        (model.Stop.arrival.between(datetime.datetime.now() - datetime.timedelta(days=14), datetime.datetime.now()))
+    ).order_by(model.Stop.arrival)
 
     delays = [stop.arrival_delay for stop in stops]
     try:
