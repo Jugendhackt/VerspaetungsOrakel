@@ -27,8 +27,25 @@ def submit():
 
     average_delay = get_delay(station, train)
     last_delays = get_last_delays(station, train)
+    arival, departure = get_stop_time(station, train)
 
-    return jsonify({"average_delay": average_delay, "last_delays": last_delays}), 200
+    return jsonify({
+        "average_delay": average_delay,
+        "arival": arival,
+        departure: departure,
+        "last_delays": last_delays
+    }), 200
+
+
+def get_stop_time(station_number: int, train_number: int):
+    stop = model.Stop.select().where(
+        (model.Station.number == station_number) &
+        (model.Train.number == train_number) &
+        # limits average to the last 30 days
+        (model.Stop.arrival >= datetime.datetime.now() - datetime.timedelta(days=14))
+    ).order_by(model.Stop.arrival).first()
+
+    return stop.arrival, stop.departure
 
 
 def get_last_delays(station_number: int, train_number: int) -> list[dict]:
