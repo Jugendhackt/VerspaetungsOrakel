@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import datetime
+import re
 from peewee import Value
 from playhouse.shortcuts import model_to_dict
 
@@ -24,9 +25,11 @@ def ping():
 def submit():
     train = request.args.get("train")
     try:
-        train = int(train)
+        numbers = re.compile(r'\d+')
+        train = int(numbers.findall(train)[0])
     except ValueError:
         return jsonify({"error": "invalid train number"}), 400
+    # TODO: ds100
     station = request.args.get("station")
 
     average_delay = get_delay(station, train)
@@ -42,12 +45,22 @@ def submit():
 
 
 def get_stop_time(station_name: str, train_number: int):
-    stop = model.Stop.select().where(
-        (model.Station.name == station_name) &
-        (model.Train.number == train_number) &
-        # limits average to the last 30 days
-        (model.Stop.arrival >= datetime.datetime.now() - datetime.timedelta(days=14))
+    stop = model.Stop.select().join(
+        model.Trip,
+        on=(model.Stop.trip == model.Trip.id)
+    ).join(
+        model.Train,
+        on=(model.Trip.train == model.Train.id)
+    ).join(
+        model.Station,
+        on=(model.Stop.station == model.Station.id)
+    ).where(
+        (model.Stop.station.name == station_name) &
+        (model.Stop.trip.train.number == train_number)
     ).order_by(model.Stop.arrival).first()
+
+    if stop is None:
+        return 0, 0
 
     return stop.arrival, stop.departure
 
@@ -69,7 +82,13 @@ def get_last_delays(station_name: str, train_number: int) -> list[dict]:
         (model.Stop.arrival >= datetime.datetime.now() - datetime.timedelta(days=14))
     ).limit(50)
 
-    return [{"date": stop.arrival.date().strftime('%Y-%m-%d'), "delay": round(stop.arrival_delay / 60, 2)} for stop in stops]
+    try:
+        response = [{"date": stop.arrival.date().strftime('%Y-%m-%d'), "delay": round(stop.arrival_delay / 60, 2)} for stop
+                in stops]
+    except:
+        response = [{"date": stop.arrival.date().strftime('%Y-%m-%d'), "delay": 0} for stop in stops]
+
+    return response
 
 
 def get_delay(station_name: str, train_number: int) -> float:
@@ -92,7 +111,7 @@ def get_delay(station_name: str, train_number: int) -> float:
     delays = [stop.arrival_delay for stop in stops]
     try:
         average_delay = round((sum(delays) / len(delays)) / 60, 2)
-    except ZeroDivisionError:
+    except:
         average_delay = 0
     return average_delay
 
