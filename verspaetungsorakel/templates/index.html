@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="../static/style.css" rel="stylesheet" />
     <link
-      href="https://fonts.googleapis.com/css?family=Roboto"
       rel="stylesheet"
     />
     <link rel="shortcut icon" type="image/x-icon" href="../static/favicon.ico" />
@@ -16,17 +15,17 @@
     <nav class="navbar">
       <div class="logo">
         <a href="#">
-          <p>VerspätungOrakel</p>
+        <div class="vsol"><img src="../static/Verspätungsorakel Logo_500x500.png" width="100" height="75" alt="Verpaetungsorakel Logo"></div>
         </a>
       </div>
       <div class="links">
-        <form autocomplete="off">
-          <input
-            type="text"
-            placeholder="Dein Zug..."
-            class="search-bar-train"
-            id="train-id"
-          />
+          <form autocomplete="off" action="">
+              <div class="autocomplete" style="width: 300px;">
+                  <input type="text" placeholder="Dein Zug..." class="search-bar-train" id="train-id">
+              </div>
+              <div class="test2" style="float: left; width: 1vw;height: 9vh;">
+                <p></p>
+              </div>
           <div class="autocomplete" style="width: 300px">
             <input
               id="myInput"
@@ -36,7 +35,7 @@
             />
           </div>
           <input
-            type="submit"
+            type="button"
             value="Send"
             class="submit"
             onclick="postRequest()"
@@ -45,10 +44,14 @@
       </div>
     </nav>
     <main class="main">
-      <div id="result" class="counter"></div>
+      <div class="results">
+        <h2 class="verspätung" id="verspätung"></h2>
+        <h3 class="abfahrt" id="abfahrt"></h3>
+        <h3 class="ankunft" id="ankunft"></h3>
+      </div>
     </main>
   </body>
   <script>
-    autocomplete(document.getElementById("myInput"));
+    autocompleteStation(document.getElementById("myInput"));
   </script>
 </html>

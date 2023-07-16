@@ -1,8 +1,8 @@
-function postRequest() {
+async function postRequest() {
     let train = document.getElementById("train-id").value
     let station = document.getElementById("myInput").value;
 
-    fetch(`http://172.16.7.194:5000/api/submit?train=${train}&station=${station}`, {
+    const res = await fetch(`http://172.16.7.194:5000/api/submit?train=${train}&station=${station}`, {
     method: "GET",
     
     headers: {
@@ -10,8 +10,10 @@ function postRequest() {
  
     }
     })
-    .then((response) => response.json())
-    .then((json) => console.log(json));
+    obj = await res.json();
+    document.getElementById("verspätung").innerHTML = "Durchschnittliche Verspätung: " + obj.average_delay; 
+    document.getElementById("abfahrt").innerHTML = "Abfahrt: " + obj.departure; 
+    document.getElementById("ankunft").innerHTML = "Ankunft: " + obj.arrival; 
 }
 
 function displayResult() {
@@ -19,7 +21,7 @@ function displayResult() {
     document.getElementById("result").innerHTML = json;
 }
 
-async function autocompletequery(value) {
+async function autocompleteStationName(value) {
     var obj;
     var list = []; 
 
@@ -34,23 +36,44 @@ async function autocompletequery(value) {
     return list;
 };
 
+async function autocompleteStationCode(value) {
+  var obj;
+  var list = []; 
+
+  const res = await fetch(`http://172.16.7.194:5000/api/stations?ds100=${value}`);
+
+  obj = await res.json();
+  for(let i = 0; i <= obj.length-1; i++) {
+      list.push(`${obj[i].ds100}(${obj[i].name})`)
+
+  }   
+
+  return list;
+};
+
+function isUpperCase(str) {
+  return str === str.toUpperCase() && str !== str.toLowerCase();
+        
+}
+
 // autocomplete
 
-function autocomplete(inp) {
+function autocompleteStation(inp) {
     /*the autocomplete function takes two arguments,
     the text field element and an array of possible autocompleted values:*/
     var currentFocus;
     /*execute a function when someone writes in the text field:*/
     inp.addEventListener("input", async function(e) {
         var a, b, i, val = this.value;
-        if (val.length > 2) {
-            var arr = await Promise.resolve(autocompletequery(val));
+        if (val.length > 2 && !isUpperCase(val) ) {
+            var arr = await Promise.resolve(autocompleteStationName(val));
             arr = arr.slice(0, 10)
         } else {
-            var arr = []
+            var arr = await Promise.resolve(autocompleteStationCode(val));
+            arr = arr.slice(0, 10)
         }
         /*close any already open lists of autocompleted values*/
-        closeAllLists();
+        closeAllLists(); 
         if (!val) { return false;}
         currentFocus = -1;
         /*create a DIV element that will contain the items (values):*/
