@@ -65,7 +65,7 @@ def get_last_delays(station_number: int, train_number: int) -> list[dict]:
         (model.Stop.arrival >= datetime.datetime.now() - datetime.timedelta(days=14))
     ).limit(50)
 
-    return [{"date": stop.arrival.date().strftime('%Y-%m-%d'), "delay": stop.arrival_delay} for stop in stops]
+    return [{"date": stop.arrival.date().strftime('%Y-%m-%d'), "delay": round(stop.arrival_delay / 60, 2)} for stop in stops]
 
 
 def get_delay(station_number: int, train_number: int) -> float:
@@ -87,7 +87,7 @@ def get_delay(station_number: int, train_number: int) -> float:
 
     delays = [stop.arrival_delay for stop in stops]
     try:
-        average_delay = round(sum(delays) / len(delays), 2)
+        average_delay = round((sum(delays) / len(delays)) / 60, 2)
     except ZeroDivisionError:
         average_delay = 0
     return average_delay
