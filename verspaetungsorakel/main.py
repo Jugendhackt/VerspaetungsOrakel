@@ -92,15 +92,11 @@ def get_last_delays(station_name: str, train_number: int) -> list[dict]:
 def get_delay(station_name: str, train_number: int) -> float:
     station_id = model.Station.select(model.Station.id).where(model.Station.name == station_name).first()
     train_id = model.Train.select(model.Train.id).where(model.Train.number == train_number).first()
-    trip_id = model.Trip.select(model.Trip.id).where(
-        (model.Trip.train == train_id) &
-        (model.Trip.date == datetime.date.today())
-    ).first()
+    trip_id = model.Trip.select(model.Trip.id).where(model.Trip.train == train_id).first()
 
     stops = model.Stop.select().where(
         (model.Stop.station == station_id) &
-        (model.Stop.trip == trip_id) &
-        (model.Stop.arrival.between(datetime.datetime.now() - datetime.timedelta(days=14), datetime.datetime.now()))
+        (model.Stop.trip == trip_id)
     ).order_by(model.Stop.arrival)
 
     delays = [stop.arrival_delay for stop in stops]
@@ -109,6 +105,7 @@ def get_delay(station_name: str, train_number: int) -> float:
     except:
         average_delay = 0
     return average_delay
+
 
 @app.route("/api/trains")
 def list_trains():
