@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import datetime
+from peewee import Value
 from playhouse.shortcuts import model_to_dict
 
 import verspaetungsorakel.model as model
@@ -75,6 +76,17 @@ def get_delay(station_number: int, train_number: int) -> float:
     return average_delay
 
 
+@app.route("/api/trains")
+def list_trains():
+    number: int = request.args.get("number", 0)
+
+    trains = []
+    for train in model.Train.select().where(Value(model.Train.number.startswith(number), lambda x: str(x))):
+        trains.append(model_to_dict(train))
+
+    return jsonify(trains), 200
+
+
 @app.route("/api/stations")
 def list_stations():
     name = request.args.get("name", "")
@@ -85,7 +97,7 @@ def list_stations():
         for station in model.Station.select().where(model.Station.name.startswith(name)):
             stations.append(model_to_dict(station))
     elif ds100 != "":
-        for station in model.Station.select().where(model.Station.ds100.startswith(name)):
+        for station in model.Station.select().where(model.Station.ds100.like(f"{ds100}%")):
             stations.append(model_to_dict(station))
 
     return jsonify(stations), 200
