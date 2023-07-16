@@ -40,27 +40,30 @@ def write_timetables_to_db(ds100: str, date: datetime) -> None:
 
         if res.status != 200:
             print(f"Error {res.status} accessing the API")
-            print(data)
+            # print(data)
             # exit(1)
             return
 
         result = xmltodict.parse(data.decode("utf-8"))
         for train in result["timetable"]["s"]:
             # print(train)
-            saved_train = model.Train.get_or_create(type=train["tl"]["@c"], number=train["tl"]["@n"])
-            saved_trip = model.Trip.get_or_create(train=saved_train[0], date=date)
-            saved_stop = model.Stop.get_or_create(station=station, trip=saved_trip[0], db_id=train["@id"])
-            if "ar" in train:
-                saved_stop[0].arrival=datetime.strptime(train["ar"]["@pt"], "%y%m%d%H%M")
-            if "dp" in train:
-                saved_stop[0].departure=datetime.strptime(train["dp"]["@pt"], "%y%m%d%H%M")
-            saved_stop[0].save()
+            try:
+                saved_train = model.Train.get_or_create(type=train["tl"]["@c"], number=train["tl"]["@n"])
+                saved_trip = model.Trip.get_or_create(train=saved_train[0], date=date)
+                saved_stop = model.Stop.get_or_create(station=station, trip=saved_trip[0], db_id=train["@id"])
+                if "ar" in train:
+                    saved_stop[0].arrival=datetime.strptime(train["ar"]["@pt"], "%y%m%d%H%M")
+                if "dp" in train:
+                    saved_stop[0].departure=datetime.strptime(train["dp"]["@pt"], "%y%m%d%H%M")
+                saved_stop[0].save()
+            except Exception as e:
+                print(e)
 
 
 def main():
     model.connect()
 
-    stations = ["FFLF", "MH", "KK", "RK", "TS", "AH", "BL", "BLT"]
+    stations = ["FFLF", "MH", "KK", "RK", "TS", "AH", "BL", "BLT", "FF", "KD", "MA", "NN", "TBI", "UE", "TU", "RM", "FKW", "HH", "LL"]
     start = datetime.now() - timedelta(hours=6)
     end = datetime.now() + timedelta(days=1)
     
