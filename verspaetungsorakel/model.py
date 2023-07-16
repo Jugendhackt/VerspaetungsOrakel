@@ -45,10 +45,11 @@ class Stop(BaseModel):
     id = AutoField()
     station = ForeignKeyField(Station)
     trip = ForeignKeyField(Trip)
-    arrival = DateTimeField()
-    departure = DateTimeField()
+    arrival = DateTimeField(null=True)
+    departure = DateTimeField(null=True)
     arrival_delay = IntegerField(null=True)
     departure_delay = IntegerField(null=True)
+    db_id = CharField(unique=True)
 
     class Meta:
         indexes = ((("station", "arrival", "departure", "trip"), True),)
