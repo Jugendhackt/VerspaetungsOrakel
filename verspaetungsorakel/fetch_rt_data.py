@@ -13,6 +13,7 @@ last_request = datetime.now()
 
 def write_timetables_to_db(ds100: str) -> None:
     for station in model.Station.select().where(model.Station.ds100 == ds100):
+        print("Current station:", station.name)
         global last_request
         while datetime.now() - last_request < timedelta(seconds=1):
             # print("We're too fast!\nWaiting...")
