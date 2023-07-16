@@ -72,7 +72,7 @@ def write_timetables_to_db(ds100: str) -> None:
 def main():
     model.connect()
 
-    stations = ["FFLF", "MH", "KK", "RK", "TS", "AH", "BL", "BLT"]
+    stations = ["FFLF", "MH", "KK", "RK", "TS", "AH", "BL", "BLT", "FF", "KD", "MA", "NN", "TBI", "UE", "TU", "RM", "FKW", "HH", "LL"]
 
     for station in stations:
         write_timetables_to_db(station)
