@@ -135,7 +135,7 @@ input[type=submit] {
 .results {
   position: relative;
   justify-content: center;
-  width: 60vw;
+  width: 1000px;
   height: 20vh;
   margin: auto;
 }
