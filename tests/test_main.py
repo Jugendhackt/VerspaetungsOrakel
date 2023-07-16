@@ -1,9 +1,51 @@
 import datetime
 
+import pytest
 from peewee import SqliteDatabase
 
 import verspaetungsorakel.main as main
 import verspaetungsorakel.model as model
+
+
+@pytest.fixture()
+def app():
+    app = main.app
+    app.config.update({
+        "TESTING": True,
+    })
+    yield app
+
+
+@pytest.fixture()
+def client(app):
+    return app.test_client()
+
+
+@pytest.fixture()
+def runner(app):
+    return app.test_cli_runner()
+
+
+def test_ping(client):
+    response = client.get("/ping")
+    assert b"pong" == response.data
+
+
+def test_api_trains(client):
+    test_db = SqliteDatabase(":memory:")
+    tables = [model.Train]
+    test_db.bind(tables)
+    test_db.connect()
+    test_db.create_tables(tables)
+
+    model.Train.create(number=123, type="IC")
+    model.Train.create(number=124, type="IC")
+    model.Train.create(number=125, type="IC")
+
+    response = client.get("/api/trains?number=12")
+    print(response.data)
+
+    test_db.close()
 
 
 def test_get_last_delays():
