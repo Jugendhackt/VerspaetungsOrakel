@@ -11,7 +11,7 @@ async function postRequest() {
     }
     })
     obj = await res.json();
-    document.getElementById("verspätung").innerHTML = "Durchschnittliche Verspätung: " + obj.average_delay; 
+    document.getElementById("verspätung").innerHTML = "Durchschnittliche Verspätung: " + obj.average_delay + " Minuten";
     document.getElementById("abfahrt").innerHTML = "Abfahrt: " + obj.departure; 
     document.getElementById("ankunft").innerHTML = "Ankunft: " + obj.arrival; 
 }
