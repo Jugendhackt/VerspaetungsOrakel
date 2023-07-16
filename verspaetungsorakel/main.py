@@ -27,11 +27,11 @@ def submit():
 
     average_delay = get_delay(station, train)
     last_delays = get_last_delays(station, train)
-    arival, departure = get_stop_time(station, train)
+    arrival, departure = get_stop_time(station, train)
 
     return jsonify({
         "average_delay": average_delay,
-        "arival": arival,
+        "arrival": arrival,
         departure: departure,
         "last_delays": last_delays
     }), 200
