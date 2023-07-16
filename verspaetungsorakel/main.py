@@ -22,8 +22,12 @@ def ping():
 
 @app.route("/api/submit")
 def submit():
-    train = int(request.args.get("train"))
-    station = int(request.args.get("station"))
+    train = request.args.get("train")
+    try:
+        train = int(train)
+    except ValueError:
+        return jsonify({"error": "invalid train number"}), 400
+    station = request.args.get("station")
 
     average_delay = get_delay(station, train)
     last_delays = get_last_delays(station, train)
@@ -37,9 +41,9 @@ def submit():
     }), 200
 
 
-def get_stop_time(station_number: int, train_number: int):
+def get_stop_time(station_name: str, train_number: int):
     stop = model.Stop.select().where(
-        (model.Station.number == station_number) &
+        (model.Station.name == station_name) &
         (model.Train.number == train_number) &
         # limits average to the last 30 days
         (model.Stop.arrival >= datetime.datetime.now() - datetime.timedelta(days=14))
@@ -48,7 +52,7 @@ def get_stop_time(station_number: int, train_number: int):
     return stop.arrival, stop.departure
 
 
-def get_last_delays(station_number: int, train_number: int) -> list[dict]:
+def get_last_delays(station_name: str, train_number: int) -> list[dict]:
     stops = model.Stop.select(model.Stop.arrival_delay, model.Stop.arrival).join(
         model.Trip,
         on=(model.Stop.trip == model.Trip.id)
@@ -59,7 +63,7 @@ def get_last_delays(station_number: int, train_number: int) -> list[dict]:
         model.Station,
         on=(model.Stop.station == model.Station.id)
     ).where(
-        (model.Station.number == station_number) &
+        (model.Station.name == station_name) &
         (model.Train.number == train_number) &
         # limits average to the last 30 days
         (model.Stop.arrival >= datetime.datetime.now() - datetime.timedelta(days=14))
@@ -68,7 +72,7 @@ def get_last_delays(station_number: int, train_number: int) -> list[dict]:
     return [{"date": stop.arrival.date().strftime('%Y-%m-%d'), "delay": round(stop.arrival_delay / 60, 2)} for stop in stops]
 
 
-def get_delay(station_number: int, train_number: int) -> float:
+def get_delay(station_name: str, train_number: int) -> float:
     stops = model.Stop.select().join(
         model.Trip,
         on=(model.Stop.trip == model.Trip.id)
@@ -79,7 +83,7 @@ def get_delay(station_number: int, train_number: int) -> float:
         model.Station,
         on=(model.Stop.station == model.Station.id)
     ).where(
-        (model.Station.number == station_number) &
+        (model.Station.name == station_name) &
         (model.Train.number == train_number) &
         # limits average to the last 30 days
         (model.Stop.arrival >= datetime.datetime.now() - datetime.timedelta(days=30))
