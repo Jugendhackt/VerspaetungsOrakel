@@ -1,8 +1,8 @@
-function postRequest() {
+async function postRequest() {
     let train = document.getElementById("train-id").value
     let station = document.getElementById("myInput").value;
 
-    fetch(`http://172.16.7.194:5000/api/submit?train=${train}&station=${station}`, {
+    const res = await fetch(`http://172.16.7.194:5000/api/submit?train=${train}&station=${station}`, {
     method: "GET",
     
     headers: {
@@ -10,8 +10,10 @@ function postRequest() {
  
     }
     })
-    .then((response) => response.json())
-    .then((json) => console.log(json));
+    obj = await res.json();
+    document.getElementById("verspätung").innerHTML = "Durchschnittliche Verspätung: " + obj.average_delay; 
+    document.getElementById("abfahrt").innerHTML = "Abfahrt: " + obj.departure; 
+    document.getElementById("ankunft").innerHTML = "Ankunft: " + obj.arrival; 
 }
 
 function displayResult() {
