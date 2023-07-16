@@ -15,13 +15,11 @@
     <nav class="navbar">
       <div class="logo">
         <a href="#">
-          <img src="../static/Verspätungsorakel Logo_500x500.png" width="50" height="50" alt="Verpaetungsorakel Logo">
-          <p>VerspätungOrakel</p>
+        <div class="vsol"><img src="../static/Verspätungsorakel Logo_500x500.png" width="100" height="75" alt="Verpaetungsorakel Logo"></div>
         </a>
       </div>
       <div class="links">
-        <form autocomplete="off">
-          <form autocomplete="off">
+          <form autocomplete="off" action="">
               <div class="autocomplete" style="width: 300px;">
                   <input type="text" placeholder="Dein Zug..." class="search-bar-train" id="train-id">
               </div>
@@ -37,7 +35,7 @@
             />
           </div>
           <input
-            type="submit"
+            type="button"
             value="Send"
             class="submit"
             onclick="postRequest()"
@@ -47,9 +45,9 @@
     </nav>
     <main class="main">
       <div class="results">
-        <h2 class="verspätung">98 Minuten</h2>
-        <h3 class="abfahrt">13:94h</h3>
-        <h3 class="ankunft">21:83h</h3>
+        <h2 class="verspätung" id="verspätung"></h2>
+        <h3 class="abfahrt" id="abfahrt"></h3>
+        <h3 class="ankunft" id="ankunft"></h3>
       </div>
     </main>
   </body>
