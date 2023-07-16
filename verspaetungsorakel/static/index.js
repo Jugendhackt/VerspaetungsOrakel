@@ -42,7 +42,7 @@ async function autocompleteStationCode(value) {
 
   obj = await res.json();
   for(let i = 0; i <= obj.length-1; i++) {
-      list.push(`${obj[i].name}(${obj[i].ds100})`)
+      list.push(`${obj[i].ds100}(${obj[i].name})`)
 
   }   
 

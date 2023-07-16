@@ -130,3 +130,11 @@ input[type=submit] {
   background-color: DodgerBlue !important;
   color: #ffffff;
 }
+
+.results {
+  position: relative;
+  justify-content: center;
+  width: 60vw;
+  height: 20vh;
+  margin: auto;
+}
