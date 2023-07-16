@@ -59,5 +59,5 @@ def connect():
         db.connect()
         db.create_tables([Train, Trip, Station, Stop])
     except Exception as e:
-        print(e)
+        print(f"DATABASE ERROR: {e}")
         exit(1)
