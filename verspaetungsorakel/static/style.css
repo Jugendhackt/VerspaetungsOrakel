@@ -130,3 +130,15 @@ input[type=submit] {
   background-color: DodgerBlue !important;
   color: #ffffff;
 }
+
+.vsol{
+  position: absolute;
+  left: 0.5em;
+  top: 0.4em;
+}
+
+.vsou{
+  position: absolute;
+  left: 2.5em;
+  top: 0.7em;
+}
