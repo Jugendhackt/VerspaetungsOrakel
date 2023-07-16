@@ -111,7 +111,7 @@ def list_stations():
 
     stations = []
     if name != "":
-        for station in model.Station.select().where(model.Station.name.startswith(name)):
+        for station in model.Station.select().where(model.Station.name.like(f"{name}%")):
             stations.append(model_to_dict(station))
     elif ds100 != "":
         for station in model.Station.select().where(model.Station.ds100.like(f"{ds100}%")):
