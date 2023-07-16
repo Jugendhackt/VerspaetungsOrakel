@@ -97,7 +97,7 @@ def list_stations():
         for station in model.Station.select().where(model.Station.name.startswith(name)):
             stations.append(model_to_dict(station))
     elif ds100 != "":
-        for station in model.Station.select().where(model.Station.ds100.startswith(ds100)):
+        for station in model.Station.select().where(model.Station.ds100.like(f"{ds100}%")):
             stations.append(model_to_dict(station))
 
     return jsonify(stations), 200
