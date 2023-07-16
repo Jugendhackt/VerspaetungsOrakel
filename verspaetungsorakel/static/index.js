@@ -19,7 +19,7 @@ function displayResult() {
     document.getElementById("result").innerHTML = json;
 }
 
-async function autocompletequery(value) {
+async function autocompleteStationName(value) {
     var obj;
     var list = []; 
 
@@ -34,23 +34,44 @@ async function autocompletequery(value) {
     return list;
 };
 
+async function autocompleteStationCode(value) {
+  var obj;
+  var list = []; 
+
+  const res = await fetch(`http://172.16.7.194:5000/api/stations?ds100=${value}`);
+
+  obj = await res.json();
+  for(let i = 0; i <= obj.length-1; i++) {
+      list.push(`${obj[i].name}(${obj[i].ds100})`)
+
+  }   
+
+  return list;
+};
+
+function isUpperCase(str) {
+  return str === str.toUpperCase() && str !== str.toLowerCase();
+        
+}
+
 // autocomplete
 
-function autocomplete(inp) {
+function autocompleteStation(inp) {
     /*the autocomplete function takes two arguments,
     the text field element and an array of possible autocompleted values:*/
     var currentFocus;
     /*execute a function when someone writes in the text field:*/
     inp.addEventListener("input", async function(e) {
         var a, b, i, val = this.value;
-        if (val.length > 2) {
-            var arr = await Promise.resolve(autocompletequery(val));
+        if (val.length > 2 && !isUpperCase(val) ) {
+            var arr = await Promise.resolve(autocompleteStationName(val));
             arr = arr.slice(0, 10)
         } else {
-            var arr = []
+            var arr = await Promise.resolve(autocompleteStationCode(val));
+            arr = arr.slice(0, 10)
         }
         /*close any already open lists of autocompleted values*/
-        closeAllLists();
+        closeAllLists(); 
         if (!val) { return false;}
         currentFocus = -1;
         /*create a DIV element that will contain the items (values):*/
