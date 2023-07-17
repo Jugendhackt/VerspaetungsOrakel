@@ -2,7 +2,7 @@ async function postRequest() {
     let train = document.getElementById("train-id").value
     let station = document.getElementById("myInput").value;
 
-    const res = await fetch(`http://172.16.7.194:5000/api/submit?train=${train}&station=${station}`, {
+    const res = await fetch(`http://127.0.0.1:5000/api/submit?train=${train}&station=${station}`, {
     method: "GET",
     
     headers: {
@@ -11,7 +11,7 @@ async function postRequest() {
     }
     })
     obj = await res.json();
-    document.getElementById("verspätung").innerHTML = "Durchschnittliche Verspätung: " + obj.average_delay; 
+    document.getElementById("verspätung").innerHTML = "Durchschnittliche Verspätung: " + obj.average_delay + " Minuten";
     document.getElementById("abfahrt").innerHTML = "Abfahrt: " + obj.departure; 
     document.getElementById("ankunft").innerHTML = "Ankunft: " + obj.arrival; 
 }
@@ -25,7 +25,7 @@ async function autocompleteStationName(value) {
     var obj;
     var list = []; 
 
-    const res = await fetch(`http://172.16.7.194:5000/api/stations?name=${value}`);
+    const res = await fetch(`http://127.0.0.1:5000/api/stations?name=${value}`);
 
     obj = await res.json();
     for(let i = 0; i <= obj.length-1; i++) {
@@ -40,7 +40,7 @@ async function autocompleteStationCode(value) {
   var obj;
   var list = []; 
 
-  const res = await fetch(`http://172.16.7.194:5000/api/stations?ds100=${value}`);
+  const res = await fetch(`http://127.0.0.1:5000/api/stations?ds100=${value}`);
 
   obj = await res.json();
   for(let i = 0; i <= obj.length-1; i++) {

@@ -11,11 +11,11 @@
     <title>VerspätungsOrakel</title>
     <script src="../static/index.js"></script>
   </head>
-  <body>
+  <body class="main">
     <nav class="navbar">
       <div class="logo">
         <a href="#">
-        <div class="vsol"><img src="../static/Verspätungsorakel Logo_500x500.png" width="100" height="75" alt="Verpaetungsorakel Logo"></div>
+        <div class="vsol"><img src="../static/Verspätungsorakel Logo_500x500.png" width=75 height=75 alt="Verpaetungsorakel Logo"></div>
         </a>
       </div>
       <div class="links">
@@ -43,13 +43,18 @@
         </form>
       </div>
     </nav>
-    <main class="main">
+    <main>
       <div class="results">
         <h2 class="verspätung" id="verspätung" style="color: white;"></h2>
         <h3 class="abfahrt" id="abfahrt" style="color: white;"></h3>
         <h3 class="ankunft" id="ankunft" style="color: white;"></h3>
       </div>
     </main>
+    <footer class="footer">
+        <p style="color: white;">
+            Creative Commons Attribution 4.0 International (CC BY 4.0) - Deutsche Bahn AG
+        </p>
+    </footer>
   </body>
   <script>
     autocompleteStation(document.getElementById("myInput"));
