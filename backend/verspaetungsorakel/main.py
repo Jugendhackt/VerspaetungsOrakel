@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import datetime
 import re
@@ -9,11 +9,6 @@ import model as model
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
-
-
-@app.route("/")
-def index():
-    return render_template("index.html")
 
 
 @app.route("/ping")
@@ -36,12 +31,11 @@ def submit():
     last_delays = get_last_delays(station, train)
     arrival, departure = get_stop_time(station, train)
 
-    if not arrival:
-        arrival = "Startbahnhof"
-
-    if not departure:
-        departure = "Endstation"
-
+    print({
+        "average_delay": average_delay,
+        "arrival": arrival,
+        "departure": departure,
+        "last_delays": last_delays})
     return jsonify({
         "average_delay": average_delay,
         "arrival": arrival,
@@ -127,17 +121,19 @@ def list_trains():
 @app.route("/api/stations")
 def list_stations():
     name = request.args.get("name", "")
-    ds100 = request.args.get("ds100", "")
 
-    stations = []
-    if name != "":
-        for station in model.Station.select().where(model.Station.name.like(f"{name}%")):
-            stations.append(model_to_dict(station))
-    elif ds100 != "":
-        for station in model.Station.select().where(model.Station.ds100.like(f"{ds100}%")):
-            stations.append(model_to_dict(station))
+    pattern = r"^[A-Z0-9]{1,8}$"
+    ds100 = bool(re.match(pattern, name))
 
-    return jsonify(stations), 200
+    station_names = []
+    if not ds100:
+        stations = model.Station.select(model.Station.name).where(model.Station.name.like(f"{name}%"))
+        station_names = [station.name for station in stations]
+    if ds100:
+        stations = model.Station.select(model.Station.ds100).where(model.Station.ds100.like(f"{name}%"))
+        station_names = [station.ds100 for station in stations]
+
+    return jsonify(station_names), 200
 
 
 def main():
