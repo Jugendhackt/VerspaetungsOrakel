@@ -1,9 +1,8 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 import datetime
 import re
-from peewee import Value
-from playhouse.shortcuts import model_to_dict
+
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 import model as model
 
@@ -81,8 +80,9 @@ def get_last_delays(station_name: str, train_number: int) -> list[dict]:
     ).limit(50)
 
     try:
-        response = [{"date": stop.arrival.date().strftime('%Y-%m-%d'), "delay": round(stop.arrival_delay / 60, 2)} for stop
-                in stops]
+        response = [{"date": stop.arrival.date().strftime('%Y-%m-%d'), "delay": round(stop.arrival_delay / 60, 2)} for
+                    stop
+                    in stops]
     except:
         response = [{"date": stop.arrival.date().strftime('%Y-%m-%d'), "delay": 0} for stop in stops]
 
@@ -111,9 +111,9 @@ def get_delay(station_name: str, train_number: int) -> float:
 def list_trains():
     number: str = request.args.get("number", "")
 
-    trains = []
-    for train in model.Train.select().where(model.Train.number.like(f"{number}%")):
-        trains.append(model_to_dict(train))
+    trains = list(
+        model.Train.select().where(model.Train.number.like(f"{number}%")).dicts()
+    )
 
     return jsonify(trains), 200
 
