@@ -2,12 +2,14 @@ import datetime
 import re
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_cors import CORS
 
 import model as model
 
+TRAIN_REGEX = r"^\d{1,6}$"
+STATION_REGEX = r"^[a-zA-Z.\-,() ]{4,32}$|^[A-Z0-9]{1,8}$"
 FRONTEND_SERVER = "http://localhost:3000"
 
 app = Flask(__name__)
@@ -30,18 +32,25 @@ def ping():
 @app.route("/api/submit", methods=["GET"])
 @limiter.limit("20/minute")
 def submit():
-    train = request.args.get("train")
-    try:
-        numbers = re.compile(r'\d+')
-        train = int(numbers.findall(train)[0])
-    except ValueError:
-        return jsonify({"error": "invalid train number"}), 400
-    # TODO: ds100
-    station = request.args.get("station")
+    train_number = request.args.get("train")
+    station_name = request.args.get("station")
 
-    average_delay = get_delay(station, train)
-    last_delays = get_last_delays(station, train)
-    arrival, departure = get_stop_time(station, train)
+    # Validate input
+    if not validate(train_number, TRAIN_REGEX):
+        return jsonify({"error": "Broken train number"}), 400
+    train_number = int(train_number)
+    # TODO: ds100
+    if not validate(station_name, STATION_REGEX):
+        return jsonify({"error": "Broken station name"}), 400
+
+    if not train_exists(train_number):
+        return jsonify({"error": "Train not found"}), 404
+    if not station_exists(station_name):
+        return jsonify({"error": "Station not found"}), 404
+
+    average_delay = get_delay(station_name, train_number)
+    last_delays = get_last_delays(station_name, train_number)
+    arrival, departure = get_stop_time(station_name, train_number)
 
     print({
         "average_delay": average_delay,
@@ -123,7 +132,11 @@ def get_delay(station_name: str, train_number: int) -> float:
 @app.route("/api/trains", methods=["GET"])
 @limiter.limit("1/second")
 def list_trains():
-    number: str = request.args.get("number", "")
+    number = request.args.get("number", "")
+
+    # Validate input
+    if not validate(number, TRAIN_REGEX):
+        return jsonify({"error": "Broken train number"}), 400
 
     trains = list(
         model.Train.select().where(model.Train.number.like(f"{number}%")).dicts()
@@ -137,6 +150,10 @@ def list_trains():
 def list_stations():
     name = request.args.get("name", "")
 
+    # Validate input
+    if not validate(name, STATION_REGEX):
+        return jsonify({"error": "Broken station name"}), 400
+
     pattern = r"^[A-Z0-9]{1,8}$"
     ds100 = bool(re.match(pattern, name))
 
@@ -149,6 +166,22 @@ def list_stations():
         station_names = [station.ds100 for station in stations]
 
     return jsonify(station_names), 200
+
+
+def train_exists(train_number: int) -> bool:
+    return model.Train.select().where(model.Train.number == train_number).exists()
+
+
+def station_exists(station_name: str) -> bool:
+    return model.Station.select().where(model.Station.name == station_name).exists()
+
+
+def validate(value: str, pattern: str) -> bool:
+    if type(value) != str:
+        return False
+    if not re.match(pattern, value):
+        return False
+    return True
 
 
 def main():
