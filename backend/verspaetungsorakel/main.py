@@ -10,12 +10,12 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
-@app.route("/ping")
+@app.route("/ping", methods=["GET"])
 def ping():
     return "pong", 200
 
 
-@app.route("/api/submit")
+@app.route("/api/submit", methods=["GET"])
 def submit():
     train = request.args.get("train")
     try:
@@ -107,7 +107,7 @@ def get_delay(station_name: str, train_number: int) -> float:
     return average_delay
 
 
-@app.route("/api/trains")
+@app.route("/api/trains", methods=["GET"])
 def list_trains():
     number: str = request.args.get("number", "")
 
@@ -118,7 +118,7 @@ def list_trains():
     return jsonify(trains), 200
 
 
-@app.route("/api/stations")
+@app.route("/api/stations", methods=["GET"])
 def list_stations():
     name = request.args.get("name", "")
 
