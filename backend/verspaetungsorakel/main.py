@@ -2,20 +2,31 @@ import datetime
 import re
 
 from flask import Flask, request, jsonify
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_cors import CORS
 
 import model as model
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["1 per second"],
+    # TODO: change to proper caching instance
+    storage_uri="memory://"
+)
 
 
 @app.route("/ping", methods=["GET"])
+@limiter.exempt
 def ping():
     return "pong", 200
 
 
 @app.route("/api/submit", methods=["GET"])
+@limiter.limit("20/minute")
 def submit():
     train = request.args.get("train")
     try:
@@ -108,6 +119,7 @@ def get_delay(station_name: str, train_number: int) -> float:
 
 
 @app.route("/api/trains", methods=["GET"])
+@limiter.limit("1/second")
 def list_trains():
     number: str = request.args.get("number", "")
 
@@ -119,6 +131,7 @@ def list_trains():
 
 
 @app.route("/api/stations", methods=["GET"])
+@limiter.limit("1/second")
 def list_stations():
     name = request.args.get("name", "")
 
