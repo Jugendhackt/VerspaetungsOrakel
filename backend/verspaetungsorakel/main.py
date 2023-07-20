@@ -8,8 +8,10 @@ from flask_cors import CORS
 
 import model as model
 
+FRONTEND_SERVER = "http://localhost:3000"
+
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+cors = CORS(app, origins=FRONTEND_SERVER)
 limiter = Limiter(
     get_remote_address,
     app=app,
