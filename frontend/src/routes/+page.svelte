@@ -43,10 +43,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>VerspätungsOrakel</title>
-</svelte:head>
-
 <main class="container">
 	<article>
 		<h1>VerspätungsOrakel</h1>
