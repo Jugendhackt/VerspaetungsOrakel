@@ -9,8 +9,8 @@ from flask_limiter.util import get_remote_address
 import model as model
 
 TRAIN_REGEX = r"^\d{1,6}$"
-STATION_REGEX = r"^[a-zA-Z.\-,() ]{4,32}$|^[A-Z0-9]{1,8}$"
 FRONTEND_SERVER = "http://localhost:3000"
+STATION_REGEX = r"^[a-zA-Z.\-,() ]{2,32}$|^[A-Z0-9]{1,8}$"
 
 app = Flask(__name__)
 cors = CORS(app, origins=FRONTEND_SERVER)
