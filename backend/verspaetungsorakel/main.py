@@ -23,6 +23,17 @@ limiter = Limiter(
 )
 
 
+@app.before_request
+def before_request():
+    model.db.connect()
+
+
+@app.after_request
+def after_request(response):
+    model.db.close()
+    return response
+
+
 @app.route("/ping", methods=["GET"])
 @limiter.exempt
 def ping():
@@ -180,7 +191,6 @@ def validate(value: str, pattern: str) -> bool:
 
 
 def main():
-    model.connect()
     app.run(host="0.0.0.0")
 
 

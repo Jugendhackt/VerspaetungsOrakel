@@ -55,6 +55,15 @@ class Stop(BaseModel):
         indexes = ((("station", "arrival", "departure", "trip"), True),)
 
 
+try:
+    db.connect()
+    db.create_tables([Train, Trip, Station, Stop])
+    db.close()
+except Exception as e:
+    print(f"DATABASE ERROR: {e}")
+    exit(1)
+
+
 def connect():
     try:
         db.connect()
