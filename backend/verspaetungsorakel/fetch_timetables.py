@@ -49,8 +49,8 @@ def write_timetables_to_db(ds100: str, date: datetime) -> None:
             # print(train)
             try:
                 saved_train = model.Train.get_or_create(type=train["tl"]["@c"], number=train["tl"]["@n"])
-                saved_trip = model.Trip.get_or_create(train=saved_train[0], date=date)
-                saved_stop = model.Stop.get_or_create(station=station, trip=saved_trip[0], db_id=train["@id"])
+                saved_trip = model.Trip.get_or_create(train=saved_train, date=date)
+                saved_stop = model.Stop.get_or_create(station=station, trip=saved_trip, db_id=train["@id"])
                 if "ar" in train:
                     saved_stop[0].arrival=datetime.strptime(train["ar"]["@pt"], "%y%m%d%H%M")
                 if "dp" in train:
