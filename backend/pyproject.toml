@@ -16,6 +16,12 @@ flask-cors = "^4.0.0"
 pytest = "^7.4.0"
 flask-limiter = "^3.3.1"
 requests = "^2.31.0"
+rich = "^13.5.0"
+
+[tool.poetry.scripts]
+fetch_stations = "verspaetungsorakel.fetch.stations:main"
+fetch_timetables = "verspaetungsorakel.fetch.timetables:main"
+fetch_rt_data = "verspaetungsorakel.fetch.rt_data:main"
 
 
 [build-system]
