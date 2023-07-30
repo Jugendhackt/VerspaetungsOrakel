@@ -19,6 +19,6 @@ def sent_db_api_request(url: str) -> dict | None:
 
     if response.status_code != 200:
         print(f"ERROR: {response.status_code} accessing the API")
-        return None
+        raise ConnectionError(f"ERROR {response.status_code} accessing the API")
 
     return xmltodict.parse(response.text)

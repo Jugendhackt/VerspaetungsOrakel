@@ -1,13 +1,15 @@
 from datetime import datetime, timedelta
 from time import sleep
 
+from peewee import IntegrityError
+
 import verspaetungsorakel.model as model
 from verspaetungsorakel.fetch.utils import sent_db_api_request
 
 last_request = datetime.now()
 
 
-def write_timetables_to_db(ds100: str, date: datetime) -> None:
+def write_timetables_to_db(ds100: str, date: datetime):
     global last_request
 
     if not model.Station.select().where(model.Station.ds100 == ds100).exists():
@@ -15,7 +17,7 @@ def write_timetables_to_db(ds100: str, date: datetime) -> None:
         return
     station = model.Station.get(model.Station.ds100 == ds100)
 
-    print("Current station:", station.name, "| Time:", date)
+    print(f"Current station: {station.name} | Time: {date}")
 
     # Sent only one request per second, db api is limited to 1 request per second
     while datetime.now() - last_request < timedelta(seconds=1):
@@ -23,32 +25,36 @@ def write_timetables_to_db(ds100: str, date: datetime) -> None:
     last_request = datetime.now()
 
     url = f"https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/{station.number}/{date.strftime('%y%m%d')}/{date.strftime('%H')}"
-    result = sent_db_api_request(url)
-    if not result:
+    try:
+        result = sent_db_api_request(url)
+    except ConnectionError as e:
+        print("ERROR: ", e)
         return
 
-    if "timetable" not in result:
-        print("ERROR: No timetable or s found")
-        return
-    if result["timetable"] is None:
-        print("ERROR: Timetable is None")
-        return
-    if "s" not in result["timetable"]:
-        print("ERROR: No s found")
+    if ("timetable" not in result) or (result["timetable"] is None) or ("s" not in result["timetable"]):
+        print("WARN: No timetable found for this station and time")
         return
 
     for train in result["timetable"]["s"]:
+        if type(train) is str:
+            print("WARN: Train is string, skipping")
+            continue
+
+        db_train, _ = model.Train.get_or_create(type=train["tl"]["@c"], number=train["tl"]["@n"])
+        db_trip, _ = model.Trip.get_or_create(train=db_train, date=date)
+
         try:
-            db_train, _ = model.Train.get_or_create(type=train["tl"]["@c"], number=train["tl"]["@n"])
-            db_trip, _ = model.Trip.get_or_create(train=db_train, date=date)
             db_stop, _ = model.Stop.get_or_create(station=station, trip=db_trip, db_id=train["@id"])
-            if "ar" in train:
-                db_stop.arrival = datetime.strptime(train["ar"]["@pt"], "%y%m%d%H%M")
-            if "dp" in train:
-                db_stop.departure = datetime.strptime(train["dp"]["@pt"], "%y%m%d%H%M")
-            db_stop.save()
-        except Exception as e:
-            print(e)
+        except IntegrityError as e:
+            print("DB Integrity Error: ", e)
+            continue
+
+        if "ar" in train:
+            db_stop.arrival = datetime.strptime(train["ar"]["@pt"], "%y%m%d%H%M")
+        if "dp" in train:
+            db_stop.departure = datetime.strptime(train["dp"]["@pt"], "%y%m%d%H%M")
+
+        db_stop.save()
 
 
 def main():
@@ -65,10 +71,8 @@ def main():
             write_timetables_to_db(station, current)
             current += timedelta(hours=1)
 
+    model.db.close()
+
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("Killed!")
-        exit(0)
+    main()
