@@ -1,26 +1,20 @@
-from datetime import datetime, timedelta
-from time import sleep
+from datetime import datetime
 
 from rich.progress import track
 
 import verspaetungsorakel.model as model
-from verspaetungsorakel.fetch.utils import sent_db_api_request
-
-last_request = datetime.now()
+from verspaetungsorakel.fetch.utils import sent_db_api_request, wait_one_second
 
 
 def write_timetables_to_db(ds100: str):
-    global last_request
+    # Sent only one request per second, db api is limited to 1 request per second
+    wait_one_second()
 
     station = model.Station.get_or_none(model.Station.ds100 == ds100)
     if station is None:
         print("ERROR: Station not found:", ds100)
         return
     print("Current station:", station.name)
-
-    while datetime.now() - last_request < timedelta(seconds=1):
-        sleep(0.1)
-    last_request = datetime.now()
 
     url = f"https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/{station.number}"
     try:

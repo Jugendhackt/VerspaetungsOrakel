@@ -1,4 +1,6 @@
 from os import getenv
+from time import sleep
+from datetime import datetime, timedelta
 
 import requests
 import xmltodict
@@ -22,3 +24,14 @@ def sent_db_api_request(url: str) -> dict | None:
         raise ConnectionError(f"ERROR {response.status_code} accessing the API")
 
     return xmltodict.parse(response.text)
+
+
+last_request = datetime.now()
+
+
+def wait_one_second():
+    global last_request
+
+    while datetime.now() - last_request < timedelta(seconds=1):
+        sleep(0.05)
+    last_request = datetime.now()
