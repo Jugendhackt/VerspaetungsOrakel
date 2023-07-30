@@ -1,5 +1,7 @@
 import os
 
+from rich.progress import track
+
 import verspaetungsorakel.model as model
 from verspaetungsorakel.fetch.utils import sent_db_api_request
 
@@ -19,6 +21,7 @@ def main():
     # db_stations = []
 
     model.db.connect()
+    for station in track(stations):
         # print(station)
         model.Station.get_or_create(name=station["@name"], number=station["@eva"], ds100=station["@ds100"])
         # db_stations.append({

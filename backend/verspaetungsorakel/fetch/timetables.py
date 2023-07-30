@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from time import sleep
 
 from peewee import IntegrityError
+from rich.progress import track
 
 import verspaetungsorakel.model as model
 from verspaetungsorakel.fetch.utils import sent_db_api_request
@@ -65,7 +66,7 @@ def main():
     start = datetime.now() - timedelta(hours=6)
     end = datetime.now() + timedelta(days=1)
 
-    for station in stations:
+    for station in track(stations):
         current = start
         while current < end:
             write_timetables_to_db(station, current)

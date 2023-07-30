@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from time import sleep
 
+from rich.progress import track
+
 import verspaetungsorakel.model as model
 from verspaetungsorakel.fetch.utils import sent_db_api_request
 
@@ -54,7 +56,7 @@ def main():
     stations = ["FFLF", "MH", "KK", "RK", "TS", "AH", "BL", "BLT", "FF", "KD", "MA", "NN", "TBI", "UE", "TU", "RM",
                 "FKW", "HH", "LL"]
 
-    for station in stations:
+    for station in track(stations):
         write_timetables_to_db(station)
 
 
