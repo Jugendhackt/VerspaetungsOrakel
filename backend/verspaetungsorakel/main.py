@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 import re
 
 from flask import Flask, request, jsonify
@@ -6,11 +7,14 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
+from verspaetungsorakel.logger import log
 import verspaetungsorakel.model as model
 
 TRAIN_REGEX = r"^\d{1,6}$"
 STATION_REGEX = r"^[a-zA-Z.\-,() ]{2,32}$|^[A-Z0-9]{1,8}$"
 FRONTEND_SERVER = "http://127.0.0.1:5173"
+
+log.info("Starting server")
 
 app = Flask(__name__)
 cors = CORS(app, origins=FRONTEND_SERVER)
@@ -37,26 +41,33 @@ def after_request(response):
 @app.route("/ping", methods=["GET"])
 @limiter.exempt
 def ping():
+    log.info(f"Ping from {hash_with_sha3(request.remote_addr)}")
     return "pong", 200
 
 
 @app.route("/api/submit", methods=["GET"])
 @limiter.limit("20/minute")
 def submit():
+    log.info(f"Submit from {hash_with_sha3(request.remote_addr)}")
+
     train_number = request.args.get("train")
     station_name = request.args.get("station")
 
     # Validate input
     if not validate(train_number, TRAIN_REGEX):
+        log.warn("Broken train number")
         return jsonify({"error": "Broken train number"}), 400
     train_number = int(train_number)
     # TODO: ds100
     if not validate(station_name, STATION_REGEX):
+        log.warn(f"Broken station name")
         return jsonify({"error": "Broken station name"}), 400
 
     if not train_exists(train_number):
+        log.warn("Train not found")
         return jsonify({"error": "Train not found"}), 404
     if not station_exists(station_name):
+        log.warn("Station not found")
         return jsonify({"error": "Station not found"}), 404
 
     average_delay = get_delay(station_name, train_number)
@@ -119,10 +130,13 @@ def get_delay(station_name: str, train_number: int) -> float:
 @app.route("/api/trains", methods=["GET"])
 @limiter.limit("1/second")
 def list_trains():
+    log.info(f"List trains from {hash_with_sha3(request.remote_addr)}")
+
     number = request.args.get("number", "")
 
     # Validate input
     if not validate(number, TRAIN_REGEX):
+        log.warn("Broken train number")
         return jsonify({"error": "Broken train number"}), 400
 
     trains = list(
@@ -135,10 +149,13 @@ def list_trains():
 @app.route("/api/stations", methods=["GET"])
 @limiter.limit("1/second")
 def list_stations():
+    log.info(f"List stations from {hash_with_sha3(request.remote_addr)}")
+
     name = request.args.get("name", "")
 
     # Validate input
     if not validate(name, STATION_REGEX):
+        log.warn("Broken station name")
         return jsonify({"error": "Broken station name"}), 400
 
     pattern = r"^[A-Z0-9]{1,8}$"
@@ -169,6 +186,12 @@ def validate(value: str, pattern: str) -> bool:
     if not re.match(pattern, value):
         return False
     return True
+
+
+def hash_with_sha3(string: str) -> str:
+    input_bytes = string.encode('utf-8')
+    sha3_hash = hashlib.sha3_224(input_bytes).hexdigest()
+    return sha3_hash
 
 
 def main():
