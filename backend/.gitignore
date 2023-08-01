@@ -1,5 +1,8 @@
-# ENV
-.env
+# Logs
+*.log
+
+# Database
+*.db*
 
 # PyCharm
 .idea
