@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-import model as model
+import verspaetungsorakel.model as model
 
 TRAIN_REGEX = r"^\d{1,6}$"
 STATION_REGEX = r"^[a-zA-Z.\-,() ]{2,32}$|^[A-Z0-9]{1,8}$"
