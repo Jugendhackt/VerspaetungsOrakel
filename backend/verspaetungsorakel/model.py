@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 from peewee import *
 import os
 
+from verspaetungsorakel.logger import log
+
 load_dotenv()
 
 db_name = os.getenv("DB_NAME")
@@ -60,7 +62,7 @@ try:
     db.create_tables([Train, Trip, Station, Stop])
     db.close()
 except Exception as e:
-    print(f"DATABASE ERROR: {e}")
+    log.fatal(f"Database Error: {e}")
     exit(1)
 
 
@@ -69,5 +71,5 @@ def connect():
         db.connect()
         db.create_tables([Train, Trip, Station, Stop])
     except Exception as e:
-        print(f"DATABASE ERROR: {e}")
+        log.fatal(f"Database Error: {e}")
         exit(1)

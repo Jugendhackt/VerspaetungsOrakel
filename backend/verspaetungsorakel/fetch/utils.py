@@ -6,6 +6,8 @@ import requests
 import xmltodict
 from dotenv import load_dotenv
 
+from verspaetungsorakel.logger import log
+
 load_dotenv()
 DB_API_ID = getenv("DB_API_ID")
 DB_API_KEY = getenv("DB_API_KEY")
@@ -20,8 +22,7 @@ def sent_db_api_request(url: str) -> dict | None:
     response = requests.get(url, headers=headers)
 
     if response.status_code != 200:
-        print(f"ERROR: {response.status_code} accessing the API")
-        raise ConnectionError(f"ERROR {response.status_code} accessing the API")
+        raise ConnectionError(f"{response.status_code} accessing the DB API")
 
     return xmltodict.parse(response.text)
 

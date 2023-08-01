@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from rich.progress import track
-
+from verspaetungsorakel.logger import log
 import verspaetungsorakel.model as model
 from verspaetungsorakel.fetch.utils import sent_db_api_request, wait_one_second
 
@@ -12,21 +11,20 @@ def write_timetables_to_db(ds100: str):
 
     station = model.Station.get_or_none(model.Station.ds100 == ds100)
     if station is None:
-        print("ERROR: Station not found:", ds100)
+        log.warn(f"Station not found: {ds100}")
         return
-    print("Current station:", station.name)
 
     url = f"https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/fchg/{station.number}"
     try:
         result = sent_db_api_request(url)
     except ConnectionError as e:
-        print(e)
+        log.warn(e)
         return
 
     for s in result["timetable"]["s"]:
         stop = model.Stop.get_or_none(model.Stop.db_id == s["@id"])
         if stop is None:
-            # print("WARN: Stop not found in database:", s["@id"])
+            log.warn(f"Stop not found in database: {s['@id']}")
             continue
 
         try:
@@ -45,13 +43,18 @@ def write_timetables_to_db(ds100: str):
 
 
 def main():
+    log.info("Start fetching realtime data")
+
     model.connect()
 
     stations = ["FFLF", "MH", "KK", "RK", "TS", "AH", "BL", "BLT", "FF", "KD", "MA", "NN", "TBI", "UE", "TU", "RM",
                 "FKW", "HH", "LL"]
 
-    for station in track(stations):
+    for station in stations:
+        log.info(f"Fetching realtime data for {station}")
         write_timetables_to_db(station)
+
+    log.info("Done")
 
 
 if __name__ == "__main__":
