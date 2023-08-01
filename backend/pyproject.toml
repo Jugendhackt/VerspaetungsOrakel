@@ -17,6 +17,7 @@ pytest = "^7.4.0"
 flask-limiter = "^3.3.1"
 requests = "^2.31.0"
 rich = "^13.5.0"
+gunicorn = "^21.2.0"
 
 [tool.poetry.scripts]
 fetch_stations = "verspaetungsorakel.fetch.stations:main"
