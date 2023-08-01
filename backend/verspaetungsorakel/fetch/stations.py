@@ -1,13 +1,8 @@
-import os
-
 from rich.progress import track
 
 from verspaetungsorakel.logger import log
 import verspaetungsorakel.model as model
 from verspaetungsorakel.fetch.utils import sent_db_api_request
-
-DB_API_ID = os.getenv("DB_API_ID")
-DB_API_KEY = os.getenv("DB_API_KEY")
 
 
 def main():
