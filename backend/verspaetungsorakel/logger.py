@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 formatter = logging.Formatter(
-    "[%(asctime)s] [%(module)s/%(levelname)s]: %(message)s",
+    "[%(asctime)s] [%(module)s(%(process)d/%(levelname)s]: %(message)s",
     datefmt="%d-%m-%y %H:%M:%S"
 )
 
