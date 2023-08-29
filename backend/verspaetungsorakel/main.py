@@ -1,6 +1,8 @@
 import datetime
 import hashlib
 import re
+from dotenv import load_dotenv
+from os import getenv
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -10,9 +12,11 @@ from flask_limiter.util import get_remote_address
 from verspaetungsorakel.logger import log
 import verspaetungsorakel.model as model
 
+load_dotenv()
+
 TRAIN_REGEX = r"^\d{1,6}$"
 STATION_REGEX = r"^[a-zA-Z.\-,() ]{2,32}$|^[A-Z0-9]{1,8}$"
-FRONTEND_SERVER = "http://127.0.0.1:5173"
+FRONTEND_SERVER = getenv("FRONTEND_SERVER", "http://127.0.0.1:5173")
 
 log.info("Starting server")
 
