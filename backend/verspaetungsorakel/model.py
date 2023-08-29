@@ -64,12 +64,3 @@ try:
 except Exception as e:
     log.fatal(f"Database Error: {e}")
     exit(1)
-
-
-def connect():
-    try:
-        db.connect()
-        db.create_tables([Train, Trip, Station, Stop])
-    except Exception as e:
-        log.fatal(f"Database Error: {e}")
-        exit(1)
