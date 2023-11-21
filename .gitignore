@@ -1,3 +1,14 @@
+# Editor
+.idea/
 
-verspaetungsorakel/.env
-Zugangsdaten MyPHP.txt
+# Cache
+__pycache__/
+
+# Dotenv
+.env
+
+# Database
+database/
+
+# Logs
+*.log

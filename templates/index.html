@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta
+      charset="UTF-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <title>Verspätungsorakel</title>
+    <link rel="icon" href="/static/favicon.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
+    />
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" async></script>
+  </head>
+
+  <body>
+    <main class="container">
+      <h1>VerspätungsOrakel</h1>
+
+      <article>
+        <form hx-get="/api/v1/data" hx-target="#search_result">
+          <div class="grid">
+            <div>
+              <label for="station">Bahnhof </label>
+              <input
+                id="station"
+                name="station"
+                type="search"
+                placeholder="Bahnhof"
+                list="stations"
+                required
+                hx-get="/api/v1/stations"
+                hx-target="#stations"
+                hx-trigger="keyup changed throttle:200ms"
+              />
+              <datalist id="stations"></datalist>
+            </div>
+
+            <div>
+              <label for="train">Zugnummer</label>
+              <input
+                type="number"
+                id="train"
+                name="train"
+                list="trains"
+                required
+                placeholder="Zugnummer"
+                hx-get="/api/v1/trains"
+                hx-target="#trains"
+                hx-trigger="keyup changed throttle:200ms"
+              />
+              <datalist id="trains"></datalist>
+            </div>
+          </div>
+
+          <button type="submit">Suchen</button>
+        </form>
+      </article>
+
+      <div id="search_result"></div>
+    </main>
+
+    <footer class="container">
+      <small>
+        Version {{ version }}
+      </small>
+    </footer>
+  </body>
+</html>
