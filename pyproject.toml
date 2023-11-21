@@ -3,7 +3,11 @@ name = "verspaetungsorakel"
 version = "0.2.5"
 description = "Add your description here"
 authors = [
-    { name = "2mal3", email = "56305732+2mal3@users.noreply.github.com" }
+    { name = "2mal3", email = "56305732+2mal3@users.noreply.github.com" },
+    { name = "Erik", email = "mail@eriks.one" },
+    { name = "JH-Tobias", email = "139634570+JH-Tobias@users.noreply.github.com" },
+    { name = "Quirin Maier", email = "quirinmaier2008@gmail.com" },
+    { name = "code1337", email = "115311343+c0d3-1337@users.noreply.github.com" }
 ]
 dependencies = [
     "fastapi~=0.104",
