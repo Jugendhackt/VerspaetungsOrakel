@@ -1,6 +1,6 @@
 [project]
 name = "verspaetungsorakel"
-version = "0.2.5"
+version = "0.2.6"
 description = "Add your description here"
 authors = [
     { name = "2mal3", email = "56305732+2mal3@users.noreply.github.com" },
