@@ -56,17 +56,21 @@ def get_stations(station: str, request: Request):
 
 @app.get("/api/v1/trains")
 @limiter.limit("60/minute")
-def get_trains(train: int, request: Request):
+def get_trains(train: str, request: Request):
+    t_type, t_number = upack_train(train)
+
     with db_session:
-        trains = to_dicts(Train.select(lambda t: str(train) in t.number).limit(100)[:])
+        trains = to_dicts(Train.select(lambda t: t_number in t.number and t_type in t.type).limit(100)[:])
     return templates.TemplateResponse("api/trains_search.html", {"request": request, "trains": trains})
 
 
 @app.get("/api/v1/data")
 @limiter.limit("1/second")
-def search(station: str, train: int, request: Request):
+def search(station: str, train: str, request: Request):
+    t_type, t_number = upack_train(train)
+
     with db_session:
-        db_train = Train[str(train)]
+        db_train = Train.get(number=t_number, type=t_type)
         if not db_train:
             raise HTTPException(status_code=404, detail="Train not found")
         db_station = Station.get(name=station)
@@ -97,3 +101,14 @@ def search(station: str, train: int, request: Request):
 
 def to_dicts(entities: list) -> list:
     return [e.to_dict() for e in entities]
+
+
+def upack_train(train: str) -> tuple:
+    t_args = train.split(" ")
+    if len(t_args) != 2:
+        raise HTTPException(status_code=400, detail="Invalid train number")
+
+    t_type = t_args[0].upper()
+    t_number = t_args[1]
+
+    return t_type, t_number
