@@ -33,6 +33,8 @@ def get_important_stations():
     stations = list(filter(lambda s: s.Verkehr == "FV", stations))
     stations = list(filter(lambda s: "Hbf" in s.NAME, stations))
 
+    stations = list(filter(lambda s: "Berlin" in s.NAME, stations))
+
     return stations
 
 

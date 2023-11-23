@@ -17,8 +17,10 @@ def sqlite_wal_mode(db, connection: sqlite3.Connection):
 
 
 class Train(db.Entity):
-    number = PrimaryKey(str)
+    number = Required(str)
     type = Required(str)
+
+    PrimaryKey(number, type)
 
     trips = Set(lambda: Trip)
 
