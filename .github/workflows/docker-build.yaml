@@ -26,8 +26,18 @@ jobs:
           username: 2mal3
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Build
+        uses: docker/build-push-action@v4
+        if: github.ref != 'refs/heads/main'
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64/v8
+
       - name: Build and push
         uses: docker/build-push-action@v4
+        if: github.ref == 'refs/heads/main'
         with:
           context: .
           cache-from: type=gha
