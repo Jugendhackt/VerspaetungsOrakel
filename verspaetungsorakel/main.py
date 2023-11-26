@@ -11,7 +11,7 @@ from datetime import date, timedelta
 from verspaetungsorakel.database import Station, Train, Stop
 from verspaetungsorakel.bahn import write_timetables_to_database, get_delays, write_stations_to_database
 
-VERSION = "0.2.6"
+VERSION = "0.2.7"
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
