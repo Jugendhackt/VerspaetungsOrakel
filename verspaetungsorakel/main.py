@@ -25,7 +25,7 @@ templates = Jinja2Templates(directory="templates")
 @app.on_event("startup")
 async def startup_event():
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(update_data, "interval", hours=12)
+    scheduler.add_job(update_data, "cron", hour="7,15,23")
     scheduler.start()
 
 
