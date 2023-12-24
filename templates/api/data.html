@@ -3,8 +3,8 @@
     <hgroup>
       <h2>{{ train.type + " " + train.number }} - {{ station.name }}</h2>
       <h3>
-        An: {{ stop.arrival }} <br>
-        Ab: {{ stop.departure }}
+        An: {{ stop.arrival.strftime("%H:%M") }} <br>
+        Ab: {{ stop.departure.strftime("%H:%M") }}
       </h3>
     </hgroup>
   </header>
