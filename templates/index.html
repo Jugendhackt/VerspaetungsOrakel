@@ -18,15 +18,14 @@
   </head>
 
   <body>
-    <main class="container">
-      <h1>VerspätungsOrakel</h1>
-
-      <article>
-        <form hx-get="/api/v1/data" hx-target="#search_result">
-          <div class="grid">
-            <div>
-              <label for="station">Bahnhof </label>
-              <input
+    <nav class="container-fluid">
+      <ul>
+        <li> <a href="/"><h4>VerspätungsOrakel</h4></a> </li>
+      </ul>
+      <form hx-get="/api/v1/data" hx-target="#search_result">
+        <ul>
+          <li>
+            <input
                 id="station"
                 name="station"
                 type="search"
@@ -36,13 +35,11 @@
                 hx-get="/api/v1/stations"
                 hx-target="#stations"
                 hx-trigger="keyup changed throttle:200ms"
-              />
-              <datalist id="stations"></datalist>
-            </div>
-
-            <div>
-              <label for="train">Zugnummer</label>
-              <input
+            />
+            <datalist id="stations"></datalist>
+          </li>
+          <li>
+            <input
                 type="text"
                 id="train"
                 name="train"
@@ -52,16 +49,20 @@
                 hx-get="/api/v1/trains"
                 hx-target="#trains"
                 hx-trigger="keyup changed throttle:200ms"
-              />
-              <datalist id="trains"></datalist>
-            </div>
-          </div>
+            />
+            <datalist id="trains"></datalist>
+          </li>
+          <li>
+            <button type="submit">Suchen</button>
+          </li>
+        </ul>
+      </form>
+    </nav>
 
-          <button type="submit">Suchen</button>
-        </form>
+    <main class="container">
+      <article id="search_result">
+        <h4>Statistiken über die Pünktlichkeit der Züge der Deutschen Bahn</h4>
       </article>
-
-      <div id="search_result"></div>
     </main>
 
     <footer class="container">
