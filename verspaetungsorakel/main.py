@@ -36,7 +36,6 @@ def update_data():
 
 
 @app.get("/")
-@limiter.limit("1/second")
 def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "version": VERSION})
 
