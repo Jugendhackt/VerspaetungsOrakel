@@ -1,16 +1,17 @@
+from contextlib import asynccontextmanager
+from datetime import date, timedelta
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pony.orm import db_session, select, desc
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from datetime import date, timedelta
-from contextlib import asynccontextmanager
+from slowapi.util import get_remote_address
 
-from verspaetungsorakel.database import Station, Train, Stop
 from verspaetungsorakel.bahn import write_timetables_to_database, get_delays, write_stations_to_database
+from verspaetungsorakel.database import Station, Train, Stop
 
 VERSION = "0.2.8"
 
@@ -63,7 +64,8 @@ def index(request: Request, station: str = None, train: str = None):
         if not db_station:
             raise HTTPException(status_code=404, detail="Station not found")
 
-        db_stop = Stop.select(lambda s: s.station == db_station and s.trip.train == db_train).order_by(lambda s: desc(s.trip.date)).first()
+        db_stop = Stop.select(lambda s: s.station == db_station and s.trip.train == db_train).order_by(
+            lambda s: desc(s.trip.date)).first()
         if not db_stop:
             return templates.TemplateResponse("index.html", {
                 "request": request,

@@ -1,8 +1,8 @@
 import sqlite3
 from datetime import date, datetime
-from pony.orm import *
 from pathlib import Path
-import os
+
+from pony.orm import *
 
 Path("database").mkdir(parents=True, exist_ok=True)
 

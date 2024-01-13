@@ -1,12 +1,13 @@
+from datetime import date, datetime
+from os import getenv
+
 from deutsche_bahn_api.api_authentication import ApiAuthentication
 from deutsche_bahn_api.station_helper import StationHelper
 from deutsche_bahn_api.timetable_helper import TimetableHelper
 from deutsche_bahn_api.train import Train
 from deutsche_bahn_api.train_changes import TrainChanges
-from os import getenv
-from datetime import date, datetime
 from dotenv import load_dotenv
-from pony.orm import db_session, delete, ObjectNotFound
+from pony.orm import db_session
 
 from verspaetungsorakel.database import Stop, Train, Trip, Station
 
@@ -111,7 +112,8 @@ def get_delays():
                     if db_stop.arrival and new_arrival:
                         db_stop.arrival_delay = int(round((new_arrival - db_stop.arrival).total_seconds() / 60, 0))
                     if db_stop.departure and new_departure:
-                        db_stop.departure_delay = int(round((new_departure - db_stop.departure).total_seconds() / 60, 0))
+                        db_stop.departure_delay = int(
+                            round((new_departure - db_stop.departure).total_seconds() / 60, 0))
 
 
 if __name__ == "__main__":
