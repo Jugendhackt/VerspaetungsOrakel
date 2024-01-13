@@ -19,6 +19,7 @@ dependencies = [
     "apscheduler~=3.10",
     "gunicorn~=21.2",
     "slowapi~=0.1",
+    "setuptools>=69.0.3",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"

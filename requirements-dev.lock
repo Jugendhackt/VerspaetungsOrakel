@@ -40,3 +40,5 @@ tzlocal==5.2
 urllib3==2.1.0
 uvicorn==0.24.0.post1
 wrapt==1.16.0
+# The following packages are considered to be unsafe in a requirements file:
+setuptools==69.0.3
