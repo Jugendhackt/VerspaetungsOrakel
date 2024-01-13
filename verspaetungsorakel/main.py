@@ -42,8 +42,56 @@ def update_data():
 
 
 @app.get("/")
-def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "version": VERSION})
+def index(request: Request, station: str = None, train: str = None):
+    if not station and not train:
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "version": VERSION,
+            "station_search": station,
+            "train_search": train,
+            "status": "no_search"
+        })
+
+    t_type, t_number = upack_train(train)
+
+    with db_session:
+        db_train = Train.get(number=t_number, type=t_type)
+        if not db_train:
+            raise HTTPException(status_code=404, detail="Train not found")
+        db_station = Station.get(name=station)
+        if not db_station:
+            raise HTTPException(status_code=404, detail="Station not found")
+
+        db_stop = Stop.select(lambda s: s.station == db_station and s.trip.train == db_train).order_by(lambda s: desc(s.trip.date)).first()
+        if not db_stop:
+            return templates.TemplateResponse("index.html", {
+                "request": request,
+                "version": VERSION,
+                "station_search": station,
+                "train_search": train,
+                "status": "no_data",
+            })
+
+        delays = select(
+            ((s.arrival_delay + s.departure_delay) / 2, s.trip.date)
+            for s in Stop
+            if s.station == db_station and s.trip.train == db_train and
+            s.trip.date >= date.today() - timedelta(days=30)
+        ).order_by(2)[:]
+        # Temp. Replace None with 0 in delays to prevent chart draw failure
+        delays = list(map(lambda d: (0, d[1]) if d[0] is None else (d[0], d[1]), delays))
+
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "version": VERSION,
+        "stop": db_stop,
+        "station": db_station,
+        "delays": delays,
+        "train": db_train,
+        "station_search": station,
+        "train_search": train,
+        "status": "search"
+    })
 
 
 @app.get("/api/v1/ping")
@@ -67,41 +115,6 @@ def get_trains(train: str, request: Request):
     with db_session:
         trains = to_dicts(Train.select(lambda t: t_number in t.number and t_type in t.type).limit(100)[:])
     return templates.TemplateResponse("api/trains_search.html", {"request": request, "trains": trains})
-
-
-@app.get("/api/v1/data")
-@limiter.limit("1/second")
-def search(station: str, train: str, request: Request):
-    t_type, t_number = upack_train(train)
-
-    with db_session:
-        db_train = Train.get(number=t_number, type=t_type)
-        if not db_train:
-            raise HTTPException(status_code=404, detail="Train not found")
-        db_station = Station.get(name=station)
-        if not db_station:
-            raise HTTPException(status_code=404, detail="Station not found")
-
-        db_stop = Stop.select(lambda s: s.station == db_station and s.trip.train == db_train).order_by(lambda s: desc(s.trip.date)).first()
-        if not db_stop:
-            return templates.TemplateResponse("api/data_error.html", {"request": request})
-
-        delays = select(
-            ((s.arrival_delay + s.departure_delay) / 2, s.trip.date)
-            for s in Stop
-            if s.station == db_station and s.trip.train == db_train and
-            s.trip.date >= date.today() - timedelta(days=30)
-        ).order_by(2)[:]
-        # Temp. Replace None with 0 in delays to prevent chart draw failure
-        delays = list(map(lambda d: (0, d[1]) if d[0] is None else (d[0], d[1]), delays))
-
-    return templates.TemplateResponse("api/data.html", {
-        "request": request,
-        "stop": db_stop,
-        "station": db_station,
-        "delays": delays,
-        "train": db_train
-    })
 
 
 def to_dicts(entities: list) -> list:

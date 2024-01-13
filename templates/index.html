@@ -22,7 +22,7 @@
       <h1>VerspätungsOrakel</h1>
 
       <article>
-        <form hx-get="/api/v1/data" hx-target="#search_result">
+        <form method="get">
           <div class="grid">
             <div>
               <label for="station">Bahnhof </label>
@@ -36,6 +36,7 @@
                 hx-get="/api/v1/stations"
                 hx-target="#stations"
                 hx-trigger="keyup changed throttle:200ms"
+                value="{{ station_search }}"
               />
               <datalist id="stations"></datalist>
             </div>
@@ -52,6 +53,7 @@
                 hx-get="/api/v1/trains"
                 hx-target="#trains"
                 hx-trigger="keyup changed throttle:200ms"
+                value="{{ train_search }}"
               />
               <datalist id="trains"></datalist>
             </div>
@@ -61,7 +63,22 @@
         </form>
       </article>
 
-      <div id="search_result"></div>
+      <article id="search_result">
+        {% if status == "no_search" %}
+          <h4>Statistiken über die Pünktlichkeit der Züge der Deutschen Bahn</h4>
+        {% endif %}
+
+        {% if status == "no_data" %}
+        <hgroup>
+          <h2>This Train Does Not Stop at This Station</h2>
+          <h3>You may want to try a different station or train</h3>
+        </hgroup>
+        {% endif %}
+
+        {% if status == "search" %}
+          {% include "components/data.html" %}
+        {% endif %}
+      </article>
     </main>
 
     <footer class="container">
