@@ -42,6 +42,7 @@ def update_data():
 
 
 @app.get("/")
+@limiter.limit("60/minute")
 def index(request: Request, station: str = None, train: str = None):
     if not station and not train:
         return templates.TemplateResponse("index.html", {
