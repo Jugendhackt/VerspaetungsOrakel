@@ -7,26 +7,32 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from datetime import date, timedelta
+from contextlib import asynccontextmanager
 
 from verspaetungsorakel.database import Station, Train, Stop
 from verspaetungsorakel.bahn import write_timetables_to_database, get_delays, write_stations_to_database
 
 VERSION = "0.2.8"
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(update_data, "cron", hour="7,15,23")
+    scheduler.start()
+
+    yield
+
+    scheduler.shutdown()
+
+
 limiter = Limiter(key_func=get_remote_address)
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-
-
-@app.on_event("startup")
-async def startup_event():
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(update_data, "cron", hour="7,15,23")
-    scheduler.start()
 
 
 def update_data():
