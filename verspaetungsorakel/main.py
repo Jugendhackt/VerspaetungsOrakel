@@ -13,7 +13,7 @@ from slowapi.util import get_remote_address
 from verspaetungsorakel.bahn import write_timetables_to_database, get_delays, write_stations_to_database
 from verspaetungsorakel.database import Station, Train, Stop
 
-VERSION = "0.2.8"
+VERSION = "0.3.0"
 
 
 @asynccontextmanager
